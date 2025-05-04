@@ -1,4 +1,4 @@
-import type { GetUserInfoBody, CreateUserBody } from '@api/validators';
+import type { CreateUserBody } from "@api/validators";
 
 /**
  * Get user information by ID
@@ -6,13 +6,13 @@ import type { GetUserInfoBody, CreateUserBody } from '@api/validators';
 export const getUserById = async (id: string) => {
   // In a real application, this would interact with the database
   // For example, using prisma: await prisma.user.findUnique({ where: { id } });
-  
+
   // For now, return mock data
   return {
     id,
-    email: 'user@example.com',
-    firstName: 'John',
-    lastName: 'Doe',
+    email: "user@example.com",
+    firstName: "John",
+    lastName: "Doe",
     createdAt: new Date().toISOString(),
   };
 };
@@ -23,13 +23,13 @@ export const getUserById = async (id: string) => {
 export const createUser = async (userData: CreateUserBody) => {
   // In a real application, this would interact with the database
   // For example, using prisma: await prisma.user.create({ data: userData });
-  
+
   // For now, return mock data
   return {
-    id: 'new-user-id',
+    id: "new-user-id",
     email: userData.email,
     firstName: userData.firstName,
     lastName: userData.lastName,
     createdAt: new Date().toISOString(),
   };
-}; 
+};
