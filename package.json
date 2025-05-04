@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Backend application based on Bun, Express, and Prisma with layered architecture",
   "type": "module",
+  "prisma": {
+    "schema": "./prisma"
+  },
   "scripts": {
     "dev": "bun --watch src/main.ts",
     "build": "tsc && bun build src/main.ts --target node --outdir dist",

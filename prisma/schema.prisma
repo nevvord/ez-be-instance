@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -14,9 +15,9 @@ datasource db {
 }
 
 // Import schema fragments
-// To use this approach, we need to include each schema file from the 'schema' directory
+// To use this approach, we need to include each schema file from the 'models' directory
 // using the /// syntax below:
 
-/// import user from "schema/user.prisma"
-/// import session from "schema/session.prisma"
-/// import event from "schema/event.prisma"
+/// import user from "models/user.prisma"
+/// import session from "models/session.prisma"
+/// import event from "models/event.prisma"
