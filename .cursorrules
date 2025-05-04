@@ -1,0 +1,119 @@
+# Cursor Project Rules
+# These rules define best practices for this specific project
+
+# File naming convention
+rule "Use kebab-case for all filenames" {
+  file_glob "**/*.ts" {
+    filename must_match /^[a-z0-9]+(-[a-z0-9]+)*\.ts$/
+  }
+}
+
+# No default exports
+rule "Use named exports instead of default exports" {
+  file_glob "**/*.ts" {
+    content must_not_match /export default/
+  }
+}
+
+# Index files should only re-export
+rule "Index files should only be used for re-exporting" {
+  file_glob "**/index.ts" {
+    content must_match /^(export \* from|export \{).*$/m
+    content must_not_match /^(function|const|let|var|class|interface|type|enum)/m
+  }
+}
+
+# Comments must be in English
+rule "All comments must be in English" {
+  file_glob "**/*.ts" {
+    comments must_match /^[\x00-\x7F]*$/
+  }
+}
+
+# Architecture layer imports control
+rule "Prevent circular dependencies between layers" {
+  # config can only import from shared
+  file_glob "src/config/**/*.ts" {
+    imports must_not_match /from ['"]@(api|db|services)/
+  }
+  
+  # db can only import from shared and config
+  file_glob "src/db/**/*.ts" {
+    imports must_not_match /from ['"]@(api|services)/
+  }
+  
+  # services can import from shared, config, and db
+  file_glob "src/services/**/*.ts" {
+    imports must_not_match /from ['"]@api/
+  }
+  
+  # api can import from anywhere
+  file_glob "src/api/**/*.ts" {
+    # No restrictions
+  }
+  
+  # shared can't import from other layers
+  file_glob "src/shared/**/*.ts" {
+    imports must_not_match /from ['"]@(api|db|services|config)/
+  }
+}
+
+# Service structure pattern
+rule "Services should follow functional approach" {
+  file_glob "src/services/**/*.ts" {
+    content must_not_match /^class\s+\w+/m
+    content must_match /^export const \w+ = /m
+  }
+}
+
+# API route pattern
+rule "API routes should follow entity.action pattern" {
+  file_glob "src/api/routes/**/*.ts" {
+    content must_match /router\.post\(['"]\/\w+\.\w+['"]/
+  }
+}
+
+# Validators must use Zod
+rule "Validators must use Zod" {
+  file_glob "src/api/validators/**/*.ts" {
+    imports must_match /from ['"]zod['"]/
+    content must_match /z\.object/
+  }
+}
+
+# Type imports optimization
+rule "Use type-only imports where appropriate" {
+  file_glob "**/*.ts" {
+    imports matching /from ['"].*types.*['"]/i must_match /import type/
+  }
+}
+
+# Error handling
+rule "Use functional error factories instead of classes" {
+  file_glob "**/*.ts" {
+    content must_not_match /class\s+\w+Error\s+extends\s+Error/
+    content matching /createError/ must_match /export const create\w+Error/
+  }
+}
+
+# File responsibilities
+rule "Keep clear separation of concerns between files" {
+  # Controllers should call services and handle HTTP
+  file_glob "src/api/controllers/**/*.ts" {
+    content must_match /import .* from ['"]@services/
+  }
+  
+  # Services should contain business logic
+  file_glob "src/services/**/*.ts" {
+    # Services might use db but should not handle HTTP
+    content must_not_match /import .* from ['"]express['"]/
+  }
+}
+
+# Code style
+rule "Enforce consistent function style" {
+  file_glob "**/*.ts" {
+    # Prefer arrow functions
+    content must_match /const \w+ = \([^)]*\) =>/
+  }
+} 

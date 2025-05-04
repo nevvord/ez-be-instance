@@ -1,0 +1,28 @@
+meta {
+  name: Health Check
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://{{host}}:{{port}}/health
+  body: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response should contain status field", function() {
+    expect(res.body.status).to.equal("ok");
+  });
+
+  test("Response should have timestamp", function() {
+    expect(res.body.timestamp).to.be.a('string');
+  });
+} 

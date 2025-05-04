@@ -1,0 +1,16 @@
+// Event model
+model Event {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String
+  data        Json
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+} 

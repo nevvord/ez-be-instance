@@ -1,0 +1,22 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Import schema fragments
+// To use this approach, we need to include each schema file from the 'schema' directory
+// using the /// syntax below:
+
+/// import user from "schema/user.prisma"
+/// import session from "schema/session.prisma"
+/// import event from "schema/event.prisma"
