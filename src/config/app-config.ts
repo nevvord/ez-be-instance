@@ -26,7 +26,24 @@ const createConfigSchema = (nodeEnv: string) => {
     JWT_SECRET: nodeEnv === 'development'
       ? z.string().optional().default('dev_secret_key_for_development_only')
       : z.string(),
-    JWT_EXPIRES_IN: z.string().default('1d'),
+    JWT_REFRESH_SECRET: nodeEnv === 'development'
+      ? z.string().optional().default('dev_refresh_secret_key_for_development_only')
+      : z.string(),
+    JWT_ACCESS_EXPIRATION: z.string().default('15m'), // 15 minutes
+    JWT_REFRESH_EXPIRATION: z.string().default('7d'), // 7 days
+    
+    // Cookie settings
+    COOKIE_SECRET: nodeEnv === 'development'
+      ? z.string().optional().default('dev_cookie_secret_key_for_development_only')
+      : z.string(),
+    COOKIE_DOMAIN: z.string().optional(),
+    COOKIE_SECURE: z.boolean().default(nodeEnv === 'production'),
+    COOKIE_SAME_SITE: z.enum(['strict', 'lax', 'none']).default('lax'),
+
+    // CSRF
+    CSRF_SECRET: nodeEnv === 'development'
+      ? z.string().optional().default('dev_csrf_secret_key_for_development_only')
+      : z.string(),
 
     // Logging
     LOG_LEVEL: z.enum(['error', 'warn', 'info', 'http', 'debug']).default('info'),

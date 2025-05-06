@@ -1,0 +1,24 @@
+meta {
+  name: Logout User
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/auth.logout
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  // Refresh token will be sent automatically in cookies
+}
+
+docs {
+  This endpoint uses cookies set in the previous login request.
+  The server will invalidate the refresh token and clear the cookies.
+}
+
+assert {
+  res.status: 200
+} 

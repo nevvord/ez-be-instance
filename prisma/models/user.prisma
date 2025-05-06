@@ -5,10 +5,13 @@ model User {
   password  String
   firstName String?
   lastName  String?
+  isActive  Boolean  @default(true)
+  role      String   @default("user") // user, admin, etc.
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  sessions Session[]
-  events   Event[]
+  sessions      Session[]
+  events        Event[]
+  refreshTokens RefreshToken[]
 } 

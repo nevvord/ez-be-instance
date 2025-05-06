@@ -1,0 +1,24 @@
+meta {
+  name: Get Current User
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/auth.me
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  // Access token will be sent automatically in cookies
+}
+
+docs {
+  This endpoint uses cookies set in the previous login request.
+  The access token is sent in the httpOnly cookie.
+}
+
+assert {
+  res.status: 200
+} 

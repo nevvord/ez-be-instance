@@ -1,12 +1,10 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
+  provider        = "prisma-client-js"
+  output          = "../node_modules/.prisma/client"
+  previewFeatures = ["prismaSchemaFolder"]
 }
 
 datasource db {
@@ -15,9 +13,8 @@ datasource db {
 }
 
 // Import schema fragments
-// To use this approach, we need to include each schema file from the 'models' directory
-// using the /// syntax below:
-
+// We use the /// syntax to import models from separate files
 /// import user from "models/user.prisma"
 /// import session from "models/session.prisma"
 /// import event from "models/event.prisma"
+/// import refresh-token from "models/refresh-token.prisma" 

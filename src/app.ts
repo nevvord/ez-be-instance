@@ -1,7 +1,8 @@
-import express from 'express';
+import express, { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { config } from './config';
+import cookieParser from 'cookie-parser';
+import { config, configurePassport } from './config';
 import { logger } from './shared/utils';
 import { prisma } from './db';
 import { errorHandler, requestLogger } from './api/middlewares';
@@ -9,7 +10,10 @@ import { router as apiRoutes } from './api/routes';
 
 // Function to create Express application
 export const createApp = () => {
+  // Create Express app
   const app = express();
+  
+  // Create HTTP server
   const httpServer = createServer(app);
 
   // Initialize Socket.io
@@ -20,25 +24,34 @@ export const createApp = () => {
     },
   });
 
-  // Setup middleware
+  // Body parsers
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-  app.use(requestLogger); // Add request logging
+  
+  // Cookie parser
+  app.use(cookieParser(config.COOKIE_SECRET));
+  
+  // Logging middleware
+  app.use(requestLogger);
 
-  // Basic health check route
+  // Initialize Passport
+  const passport = configurePassport();
+  app.use(passport.initialize());
+
+  // Health check endpoint
   app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
-  // Connect API routes
+  // API routes
   app.use('/api', apiRoutes);
 
-  // Error handling middleware should be last
-  app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  // Error handler middleware
+  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     errorHandler(err, req, res, next);
   });
 
-  // Handle Socket.io connections
+  // Initialize Socket.io events
   io.on('connection', (socket) => {
     logger.info(`Socket connected: ${socket.id}`);
 
