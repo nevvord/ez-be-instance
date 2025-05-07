@@ -10,10 +10,6 @@ post {
   auth: none
 }
 
-vars:pre-request {
-  // Refresh token will be sent automatically in cookies
-}
-
 docs {
   This endpoint uses cookies set in the previous login request.
   No need to send anything in the body since the refresh token is in the httpOnly cookie.

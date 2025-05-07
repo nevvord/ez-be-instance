@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authenticate, validate } from '@api/middlewares';
+import { asHandler, asAuthHandler } from '@api/middlewares/controller-types';
 import { 
   register, 
   login, 
@@ -17,16 +18,16 @@ export const router = Router();
 
 // Routes follow pattern: entity.action
 // Register a new user
-router.post('/auth.register', validate(registerSchema), register);
+router.post('/auth.register', validate(registerSchema), asHandler(register));
 
-// Login
-router.post('/auth.login', validate(loginSchema), login);
+// Login user
+router.post('/auth.login', validate(loginSchema), asHandler(login));
 
 // Refresh token
-router.post('/auth.refresh', validate(refreshTokenSchema), refresh);
+router.post('/auth.refresh', validate(refreshTokenSchema), asHandler(refresh));
 
-// Logout
-router.post('/auth.logout', logout);
+// Logout user (requires authentication)
+router.post('/auth.logout', authenticate, asAuthHandler(logout));
 
-// Get current user (protected route)
-router.get('/auth.me', authenticate, getCurrentUser); 
+// Get current user (requires authentication)
+router.get('/auth.me', authenticate, asAuthHandler(getCurrentUser)); 

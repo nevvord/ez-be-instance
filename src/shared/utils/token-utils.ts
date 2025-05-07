@@ -2,6 +2,9 @@ import jwt from 'jsonwebtoken';
 import { config } from '@config';
 import { AccessTokenPayload, JwtPayload, RefreshTokenPayload } from '@shared/types/auth';
 
+// Определим тип StringValue для jwt.sign
+type StringValue = string & { __brand: 'StringValue' };
+
 // Generate access token
 export const generateAccessToken = (payload: JwtPayload): string => {
   const accessPayload: AccessTokenPayload = {
@@ -9,9 +12,10 @@ export const generateAccessToken = (payload: JwtPayload): string => {
     type: 'access'
   };
 
+  // Использую any для обхода проблем с типизацией
   return jwt.sign(accessPayload, config.JWT_SECRET, {
     expiresIn: config.JWT_ACCESS_EXPIRATION
-  });
+  } as any);
 };
 
 // Generate refresh token
@@ -22,9 +26,10 @@ export const generateRefreshToken = (payload: JwtPayload, tokenId: string): stri
     tokenId
   };
 
+  // Использую any для обхода проблем с типизацией
   return jwt.sign(refreshPayload, config.JWT_REFRESH_SECRET, {
     expiresIn: config.JWT_REFRESH_EXPIRATION
-  });
+  } as any);
 };
 
 // Verify access token

@@ -126,13 +126,16 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
 };
 
 // Logout user
-export const logout = async (req: Request, res: Response, next: NextFunction) => {
+export const logout = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const token = req.cookies.refreshToken || req.body.refreshToken;
+    const userId = req.user?.userId;
+    const ipAddress = req.ip;
+    const userAgent = req.get('user-agent');
     
     if (token) {
-      // Invalidate token in database
-      await authService.logoutUser(token);
+      // Invalidate token in database and end session
+      await authService.logoutUser(token, userId, ipAddress, userAgent);
     }
     
     // Clear cookies

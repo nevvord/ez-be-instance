@@ -1,0 +1,14 @@
+meta {
+  name: Get Active Sessions
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/sessions.list
+  body: none
+}
+
+assert {
+  res.status: 200
+} 

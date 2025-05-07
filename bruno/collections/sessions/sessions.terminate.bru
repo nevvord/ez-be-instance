@@ -1,0 +1,20 @@
+meta {
+  name: Terminate Session
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/sessions.terminate
+  body: json
+}
+
+body:json {
+  {
+    "sessionId": "session-id-to-terminate"
+  }
+}
+
+assert {
+  res.status: 200
+} 

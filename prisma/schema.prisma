@@ -4,7 +4,6 @@
 generator client {
   provider        = "prisma-client-js"
   output          = "../node_modules/.prisma/client"
-  previewFeatures = ["prismaSchemaFolder"]
 }
 
 datasource db {
@@ -12,9 +11,70 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Import schema fragments
-// We use the /// syntax to import models from separate files
-/// import user from "models/user.prisma"
-/// import session from "models/session.prisma"
-/// import event from "models/event.prisma"
-/// import refresh-token from "models/refresh-token.prisma" 
+// Event model
+model Event {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  data      Json?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+}
+
+// Refresh Token model
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  isValid   Boolean  @default(true)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+// Session model
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  ipAddress String?
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// User model
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String?
+  lastName  String?
+  isActive  Boolean  @default(true)
+  role      String   @default("user") // user, admin, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  sessions      Session[]
+  events        Event[]
+  refreshTokens RefreshToken[]
+}

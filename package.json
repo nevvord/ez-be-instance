@@ -15,7 +15,9 @@
     "db:generate": "bash combine-schema.sh && bunx prisma generate && bash restore-schema.sh",
     "db:migrate": "bash combine-schema.sh && bunx prisma migrate dev && bash restore-schema.sh",
     "db:push": "bash combine-schema.sh && bunx prisma db push && bash restore-schema.sh",
-    "test": "bun test"
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage"
   },
   "dependencies": {
     "@prisma/client": "^5.x",

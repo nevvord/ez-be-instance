@@ -68,6 +68,27 @@ export const loginUser = async (data: LoginRequest, ipAddress?: string, userAgen
   return createTokens(user, tokenPayload, ipAddress, userAgent);
 };
 
+// Create a session for the user
+export const createSession = async (
+  userId: string,
+  ipAddress?: string,
+  userAgent?: string
+) => {
+  // Calculate expiration date (30 days)
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 30);
+
+  // Create session in database
+  return prisma.session.create({
+    data: {
+      userId,
+      ipAddress,
+      userAgent,
+      expiresAt
+    }
+  });
+};
+
 // Create tokens (access and refresh)
 export const createTokens = async (
   user: User,
@@ -99,6 +120,9 @@ export const createTokens = async (
       userAgent
     }
   });
+
+  // Create a session for this user
+  await createSession(user.id, ipAddress, userAgent);
 
   // Remove sensitive data
   const { password: _, ...userData } = user;
@@ -152,7 +176,7 @@ export const refreshToken = async (token: string, ipAddress?: string, userAgent?
 };
 
 // Logout user
-export const logoutUser = async (token: string) => {
+export const logoutUser = async (token: string, userId?: string, ipAddress?: string, userAgent?: string) => {
   // Invalidate refresh token
   await prisma.refreshToken.updateMany({
     where: {
@@ -164,5 +188,50 @@ export const logoutUser = async (token: string) => {
     }
   });
 
+  // If userId is provided, try to find and invalidate the session
+  if (userId && (ipAddress || userAgent)) {
+    // Find session by userId and device information
+    const session = await prisma.session.findFirst({
+      where: {
+        userId,
+        ...(ipAddress && { ipAddress }),
+        ...(userAgent && { userAgent }),
+        expiresAt: {
+          gt: new Date()
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    if (session) {
+      // Update session expiration to now (effectively invalidating it)
+      await prisma.session.update({
+        where: {
+          id: session.id
+        },
+        data: {
+          expiresAt: new Date()
+        }
+      });
+    }
+  }
+
   return { success: true };
+};
+
+// Get active sessions for a user
+export const getActiveSessions = async (userId: string) => {
+  return prisma.session.findMany({
+    where: {
+      userId,
+      expiresAt: {
+        gt: new Date()
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  });
 }; 

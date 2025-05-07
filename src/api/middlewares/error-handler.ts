@@ -15,7 +15,7 @@ export const errorHandler = (
     statusCode: 500,
     code: 'INTERNAL_ERROR',
     message: 'Internal server error',
-    details: undefined
+    details: {} as Record<string, any> | undefined
   };
 
   // Check if it's an AppError
